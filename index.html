@@ -1,0 +1,1338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>DealHub — Smart Deals</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+:root{
+  --bg:#f5f7fb;
+  --card:#ffffff;
+  --text:#111827;
+  --muted:#6b7280;
+  --border:#e5e7eb;
+  --primary:#ef4444;
+  --green:#16a34a;
+  --dark:#111827;
+}
+
+body.dark{
+  --bg:#0b1120;
+  --card:#111827;
+  --text:#f9fafb;
+  --muted:#9ca3af;
+  --border:#263244;
+}
+
+body{
+  font-family:Inter,Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  transition:.2s;
+}
+
+button,
+input,
+select{
+  font:inherit;
+}
+
+button{
+  cursor:pointer;
+}
+
+.container{
+  width:min(1200px,94%);
+  margin:auto;
+}
+
+/* NAV */
+
+nav{
+  height:72px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.logo{
+  font-size:25px;
+  font-weight:900;
+}
+
+.logo span{
+  color:var(--primary);
+}
+
+.nav-actions{
+  display:flex;
+  gap:8px;
+}
+
+.icon-btn{
+  width:42px;
+  height:42px;
+  border:1px solid var(--border);
+  background:var(--card);
+  color:var(--text);
+  border-radius:12px;
+}
+
+/* HERO */
+
+.hero{
+  background:linear-gradient(135deg,#111827,#293548);
+  color:white;
+  padding:45px;
+  border-radius:25px;
+  display:grid;
+  grid-template-columns:1.5fr .7fr;
+  gap:30px;
+}
+
+.hero h1{
+  font-size:46px;
+  line-height:1.05;
+  margin-bottom:15px;
+}
+
+.hero p{
+  color:#cbd5e1;
+  max-width:650px;
+  line-height:1.6;
+}
+
+.search-box{
+  margin-top:25px;
+  display:flex;
+  background:white;
+  padding:5px;
+  border-radius:13px;
+}
+
+.search-box input{
+  flex:1;
+  border:0;
+  outline:0;
+  padding:14px;
+  font-size:15px;
+}
+
+.search-box button{
+  border:0;
+  background:var(--primary);
+  color:white;
+  padding:0 22px;
+  border-radius:9px;
+  font-weight:800;
+}
+
+.stats{
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:20px;
+  padding:25px;
+}
+
+.stats-number{
+  font-size:40px;
+  font-weight:900;
+  display:block;
+  margin:8px 0;
+}
+
+/* FILTERS */
+
+.toolbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+  margin:25px 0 15px;
+  flex-wrap:wrap;
+}
+
+.categories{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.chip{
+  border:1px solid var(--border);
+  background:var(--card);
+  color:var(--text);
+  padding:9px 14px;
+  border-radius:999px;
+}
+
+.chip.active{
+  background:var(--dark);
+  color:white;
+}
+
+.sort{
+  border:1px solid var(--border);
+  background:var(--card);
+  color:var(--text);
+  padding:10px 12px;
+  border-radius:10px;
+}
+
+/* GRID */
+
+.section-title{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin:20px 0 15px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:16px;
+}
+
+.card{
+  position:relative;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:18px;
+  overflow:hidden;
+  transition:.2s;
+}
+
+.card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 15px 35px rgba(0,0,0,.1);
+}
+
+.product-image{
+  height:185px;
+  display:grid;
+  place-items:center;
+  background:#eef1f5;
+  font-size:65px;
+}
+
+.wishlist{
+  position:absolute;
+  top:12px;
+  right:12px;
+  width:36px;
+  height:36px;
+  border:0;
+  border-radius:50%;
+  background:white;
+  font-size:18px;
+}
+
+.discount{
+  position:absolute;
+  top:12px;
+  left:12px;
+  background:#dcfce7;
+  color:#166534;
+  padding:6px 9px;
+  border-radius:8px;
+  font-size:11px;
+  font-weight:900;
+}
+
+.card-body{
+  padding:16px;
+}
+
+.category{
+  color:var(--muted);
+  font-size:11px;
+  font-weight:800;
+  text-transform:uppercase;
+}
+
+.product-name{
+  font-weight:800;
+  margin:7px 0;
+  min-height:42px;
+}
+
+.price{
+  font-size:22px;
+  font-weight:900;
+}
+
+.mrp{
+  color:var(--muted);
+  text-decoration:line-through;
+  font-size:12px;
+  margin-left:6px;
+}
+
+.save{
+  color:var(--green);
+  font-size:12px;
+  font-weight:800;
+  margin-top:4px;
+}
+
+.score{
+  display:inline-block;
+  margin-top:10px;
+  padding:5px 8px;
+  border-radius:7px;
+  background:#fff7ed;
+  color:#c2410c;
+  font-size:11px;
+  font-weight:900;
+}
+
+.buy{
+  display:block;
+  text-align:center;
+  background:var(--dark);
+  color:white;
+  text-decoration:none;
+  padding:11px;
+  border-radius:10px;
+  margin-top:13px;
+  font-weight:800;
+}
+
+.history-btn{
+  width:100%;
+  border:1px solid var(--border);
+  background:transparent;
+  color:var(--text);
+  padding:9px;
+  border-radius:9px;
+  margin-top:8px;
+}
+
+/* MODAL */
+
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.65);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  z-index:100;
+}
+
+.modal.show{
+  display:flex;
+}
+
+.modal-box{
+  background:var(--card);
+  color:var(--text);
+  width:min(600px,100%);
+  border-radius:20px;
+  padding:25px;
+}
+
+.modal-head{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:20px;
+}
+
+.close{
+  border:0;
+  background:transparent;
+  color:var(--text);
+  font-size:24px;
+}
+
+.chart{
+  height:220px;
+  display:flex;
+  align-items:end;
+  gap:10px;
+  border-bottom:1px solid var(--border);
+  padding:20px 5px;
+}
+
+.bar{
+  flex:1;
+  background:var(--primary);
+  border-radius:6px 6px 0 0;
+  min-height:20px;
+  position:relative;
+}
+
+.bar span{
+  position:absolute;
+  top:-22px;
+  font-size:10px;
+  width:100%;
+  text-align:center;
+}
+
+/* ADMIN */
+
+.admin{
+  margin-top:40px;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:25px;
+}
+
+.admin-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:15px;
+  margin-top:15px;
+}
+
+.admin-box{
+  padding:20px;
+  background:var(--bg);
+  border-radius:15px;
+}
+
+.admin-box strong{
+  display:block;
+  font-size:30px;
+  margin-top:7px;
+}
+
+/* FOOTER */
+
+footer{
+  text-align:center;
+  color:var(--muted);
+  font-size:12px;
+  padding:40px 10px;
+}
+
+/* MOBILE */
+
+@media(max-width:900px){
+  .hero{
+    grid-template-columns:1fr;
+  }
+
+  .grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+}
+
+@media(max-width:550px){
+  .hero{
+    padding:25px;
+  }
+
+  .hero h1{
+    font-size:34px;
+  }
+
+  .grid{
+    grid-template-columns:1fr;
+  }
+
+  .admin-grid{
+    grid-template-columns:1fr;
+  }
+
+  .search-box{
+    flex-direction:column;
+    gap:5px;
+  }
+
+  .search-box button{
+    padding:13px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<nav>
+  <div class="logo">
+    Deal<span>Hub</span>
+  </div>
+
+  <div class="nav-actions">
+    <button class="icon-btn" onclick="toggleDark()">🌙</button>
+    <button class="icon-btn" onclick="showWishlist()">❤️</button>
+  </div>
+</nav>
+
+<section class="hero">
+
+  <div>
+
+    <h1>
+      Real deals.<br>
+      Less searching.
+    </h1>
+
+    <p>
+      Compare products, discounts and prices from multiple marketplaces
+      and jump directly to the original seller.
+    </p>
+
+    <div class="search-box">
+      <input
+        id="search"
+        placeholder="Search products, brands or categories..."
+        oninput="render()"
+      >
+
+      <button onclick="render()">
+        Search
+      </button>
+    </div>
+
+  </div>
+
+  <div class="stats">
+
+    <small>LIVE DEALS</small>
+
+    <span
+      class="stats-number"
+      id="dealCount"
+    >
+      0
+    </span>
+
+    <span>
+      products available
+    </span>
+
+    <hr style="margin:20px 0;border-color:#ffffff20">
+
+    <small>
+      Best deals automatically appear first.
+    </small>
+
+  </div>
+
+</section>
+
+
+<div class="toolbar">
+
+  <div
+    class="categories"
+    id="categories"
+  ></div>
+
+  <select
+    class="sort"
+    id="sort"
+    onchange="render()"
+  >
+    <option value="discount">
+      Highest discount
+    </option>
+
+    <option value="price">
+      Lowest price
+    </option>
+
+    <option value="name">
+      Name
+    </option>
+  </select>
+
+</div>
+
+
+<div class="section-title">
+
+  <h2>
+    🔥 Today's Deals
+  </h2>
+
+  <span
+    id="result"
+    style="color:var(--muted)"
+  ></span>
+
+</div>
+
+
+<section
+  class="grid"
+  id="products"
+></section>
+
+
+<section class="admin">
+
+  <h2>📊 Admin Dashboard</h2>
+
+  <p style="color:var(--muted);margin-top:5px">
+    Local prototype analytics
+  </p>
+
+  <div class="admin-grid">
+
+    <div class="admin-box">
+      Total Products
+      <strong id="adminProducts">0</strong>
+    </div>
+
+    <div class="admin-box">
+      Wishlist Items
+      <strong id="adminWishlist">0</strong>
+    </div>
+
+    <div class="admin-box">
+      Buy Clicks
+      <strong id="adminClicks">0</strong>
+    </div>
+
+  </div>
+
+</section>
+
+
+<footer>
+  DealHub Prototype • Prices should be refreshed from official marketplace APIs/feeds before production.
+</footer>
+
+</div>
+
+
+<!-- PRICE HISTORY MODAL -->
+
+<div
+  class="modal"
+  id="historyModal"
+>
+
+  <div class="modal-box">
+
+    <div class="modal-head">
+
+      <h2 id="historyTitle">
+        Price History
+      </h2>
+
+      <button
+        class="close"
+        onclick="closeModal()"
+      >
+        ×
+      </button>
+
+    </div>
+
+    <div
+      id="historyContent"
+    ></div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+/* =========================================
+   PRODUCT DATABASE
+========================================= */
+
+const products = [
+
+{
+  id:1,
+  name:"Mivi Duopods B1 Earbuds",
+  category:"Audio",
+  price:599,
+  mrp:2999,
+  icon:"🎧",
+  store:"Flipkart",
+  url:"https://www.flipkart.com/",
+  history:[799,749,699,649,599]
+},
+
+{
+  id:2,
+  name:"boAt Power Bank 27000mAh",
+  category:"Power",
+  price:1799,
+  mrp:5499,
+  icon:"🔋",
+  store:"Flipkart",
+  url:"https://www.flipkart.com/",
+  history:[2499,2299,2099,1899,1799]
+},
+
+{
+  id:3,
+  name:"Fire-Boltt Smartwatch",
+  category:"Wearables",
+  price:1299,
+  mrp:2999,
+  icon:"⌚",
+  store:"Flipkart",
+  url:"https://www.flipkart.com/",
+  history:[1599,1499,1399,1349,1299]
+},
+
+{
+  id:4,
+  name:"PUMA Sneakers",
+  category:"Footwear",
+  price:1499,
+  mrp:3999,
+  icon:"👟",
+  store:"Flipkart",
+  url:"https://www.flipkart.com/",
+  history:[1999,1899,1699,1599,1499]
+},
+
+{
+  id:5,
+  name:"Men's Casual Jeans",
+  category:"Fashion",
+  price:699,
+  mrp:2499,
+  icon:"👖",
+  store:"Flipkart",
+  url:"https://www.flipkart.com/",
+  history:[899,849,799,749,699]
+},
+
+{
+  id:6,
+  name:"POCO Smartphone",
+  category:"Mobiles",
+  price:11999,
+  mrp:15999,
+  icon:"📱",
+  store:"Flipkart",
+  url:"https://www.flipkart.com/",
+  history:[13999,13499,12999,12499,11999]
+},
+
+{
+  id:7,
+  name:"realme Smart TV",
+  category:"TV & Electronics",
+  price:13999,
+  mrp:22999,
+  icon:"📺",
+  store:"Flipkart",
+  url:"https://www.flipkart.com/",
+  history:[15999,15499,14999,14499,13999]
+},
+
+{
+  id:8,
+  name:"Air Conditioner",
+  category:"Appliances",
+  price:27999,
+  mrp:39999,
+  icon:"❄️",
+  store:"Flipkart",
+  url:"https://www.flipkart.com/",
+  history:[31999,30999,29999,28999,27999]
+},
+
+{
+  id:9,
+  name:"Pilgrim Beauty Combo",
+  category:"Beauty",
+  price:799,
+  mrp:1599,
+  icon:"✨",
+  store:"Flipkart",
+  url:"https://www.flipkart.com/",
+  history:[999,949,899,849,799]
+},
+
+{
+  id:10,
+  name:"Travel Trolley Bag",
+  category:"Travel",
+  price:1299,
+  mrp:2999,
+  icon:"🧳",
+  store:"Flipkart",
+  url:"https://www.flipkart.com/",
+  history:[1699,1599,1499,1399,1299]
+}
+
+];
+
+
+/* =========================================
+   STATE
+========================================= */
+
+let activeCategory = "All";
+
+let wishlist =
+  JSON.parse(
+    localStorage.getItem("dealhub_wishlist") || "[]"
+  );
+
+let clicks =
+  Number(
+    localStorage.getItem("dealhub_clicks") || 0
+  );
+
+
+/* =========================================
+   CALCULATIONS
+========================================= */
+
+function discount(product){
+
+  return Math.round(
+    (1 - product.price / product.mrp) * 100
+  );
+
+}
+
+
+function dealScore(product){
+
+  const d = discount(product);
+
+  if(d >= 70) return "Excellent Deal";
+  if(d >= 50) return "Great Deal";
+  if(d >= 30) return "Good Deal";
+
+  return "Normal Price";
+
+}
+
+
+/* =========================================
+   CATEGORIES
+========================================= */
+
+function renderCategories(){
+
+  const categories = [
+    "All",
+    ...new Set(
+      products.map(p => p.category)
+    )
+  ];
+
+  document.getElementById("categories").innerHTML =
+    categories.map(category => `
+
+      <button
+        class="chip ${category === activeCategory ? "active" : ""}"
+        onclick="activeCategory='${category}';render()"
+      >
+        ${category}
+      </button>
+
+    `).join("");
+
+}
+
+
+/* =========================================
+   PRODUCTS
+========================================= */
+
+function render(){
+
+  renderCategories();
+
+  const query =
+    document
+      .getElementById("search")
+      .value
+      .toLowerCase()
+      .trim();
+
+  let list = products.filter(product => {
+
+    const categoryMatch =
+      activeCategory === "All" ||
+      product.category === activeCategory;
+
+    const searchMatch =
+      !query ||
+      `${product.name} ${product.category} ${product.store}`
+        .toLowerCase()
+        .includes(query);
+
+    return categoryMatch && searchMatch;
+
+  });
+
+
+  const sort =
+    document.getElementById("sort").value;
+
+
+  if(sort === "discount"){
+
+    list.sort(
+      (a,b) =>
+        discount(b) - discount(a)
+    );
+
+  }
+
+
+  if(sort === "price"){
+
+    list.sort(
+      (a,b) =>
+        a.price - b.price
+    );
+
+  }
+
+
+  if(sort === "name"){
+
+    list.sort(
+      (a,b) =>
+        a.name.localeCompare(b.name)
+    );
+
+  }
+
+
+  document.getElementById("dealCount")
+    .textContent = list.length;
+
+
+  document.getElementById("result")
+    .textContent =
+      `${list.length} deal${list.length !== 1 ? "s" : ""}`;
+
+
+  document.getElementById("products").innerHTML =
+
+    list.length ?
+
+    list.map(product => {
+
+      const d = discount(product);
+
+      const saved =
+        product.mrp - product.price;
+
+      const liked =
+        wishlist.includes(product.id);
+
+
+      return `
+
+      <article class="card">
+
+        <div class="product-image">
+          ${product.icon}
+        </div>
+
+        <div class="discount">
+          ${d}% OFF
+        </div>
+
+        <button
+          class="wishlist"
+          onclick="toggleWishlist(${product.id})"
+        >
+          ${liked ? "❤️" : "🤍"}
+        </button>
+
+
+        <div class="card-body">
+
+          <div class="category">
+            ${product.category}
+          </div>
+
+          <div class="product-name">
+            ${product.name}
+          </div>
+
+          <div>
+
+            <span class="price">
+              ₹${product.price.toLocaleString("en-IN")}
+            </span>
+
+            <span class="mrp">
+              ₹${product.mrp.toLocaleString("en-IN")}
+            </span>
+
+          </div>
+
+          <div class="save">
+            Save ₹${saved.toLocaleString("en-IN")}
+          </div>
+
+          <span class="score">
+            ⚡ ${dealScore(product)}
+          </span>
+
+
+          <a
+            class="buy"
+            href="${product.url}"
+            target="_blank"
+            rel="noopener"
+            onclick="trackClick(${product.id})"
+          >
+            Buy on ${product.store} →
+          </a>
+
+
+          <button
+            class="history-btn"
+            onclick="showHistory(${product.id})"
+          >
+            📈 Price History
+          </button>
+
+        </div>
+
+      </article>
+
+      `;
+
+    }).join("")
+
+    :
+
+    `<div style="
+      grid-column:1/-1;
+      background:var(--card);
+      padding:50px;
+      border-radius:20px;
+      text-align:center;
+    ">
+      No deals found.
+    </div>`;
+
+
+  updateAdmin();
+
+}
+
+
+/* =========================================
+   WISHLIST
+========================================= */
+
+function toggleWishlist(id){
+
+  if(wishlist.includes(id)){
+
+    wishlist =
+      wishlist.filter(
+        item => item !== id
+      );
+
+  }else{
+
+    wishlist.push(id);
+
+  }
+
+
+  localStorage.setItem(
+    "dealhub_wishlist",
+    JSON.stringify(wishlist)
+  );
+
+
+  render();
+
+}
+
+
+function showWishlist(){
+
+  const items =
+    products.filter(
+      p => wishlist.includes(p.id)
+    );
+
+
+  if(!items.length){
+
+    alert("Your wishlist is empty.");
+
+    return;
+
+  }
+
+
+  document.getElementById("search").value = "";
+
+  activeCategory = "All";
+
+  document.getElementById("sort").value =
+    "discount";
+
+
+  document.getElementById("products").innerHTML =
+
+    items.map(product => `
+
+      <article class="card">
+
+        <div class="product-image">
+          ${product.icon}
+        </div>
+
+        <div class="discount">
+          ${discount(product)}% OFF
+        </div>
+
+        <div class="card-body">
+
+          <div class="category">
+            ${product.category}
+          </div>
+
+          <div class="product-name">
+            ${product.name}
+          </div>
+
+          <div class="price">
+            ₹${product.price.toLocaleString("en-IN")}
+          </div>
+
+          <a
+            class="buy"
+            href="${product.url}"
+            target="_blank"
+            rel="noopener"
+            onclick="trackClick(${product.id})"
+          >
+            Buy Now →
+          </a>
+
+        </div>
+
+      </article>
+
+    `).join("");
+
+}
+
+
+/* =========================================
+   PRICE HISTORY
+========================================= */
+
+function showHistory(id){
+
+  const product =
+    products.find(
+      p => p.id === id
+    );
+
+  if(!product) return;
+
+
+  document.getElementById(
+    "historyTitle"
+  ).textContent =
+    product.name;
+
+
+  const max =
+    Math.max(...product.history);
+
+
+  document.getElementById(
+    "historyContent"
+  ).innerHTML = `
+
+    <p style="color:var(--muted);margin-bottom:10px">
+      Recent price movement
+    </p>
+
+    <div class="chart">
+
+      ${product.history.map(price => `
+
+        <div
+          class="bar"
+          style="height:${Math.max(
+            20,
+            (price / max) * 170
+          )}px"
+        >
+
+          <span>
+            ₹${price.toLocaleString("en-IN")}
+          </span>
+
+        </div>
+
+      `).join("")}
+
+    </div>
+
+    <p style="
+      margin-top:20px;
+      color:var(--green);
+      font-weight:800;
+    ">
+      Current price:
+      ₹${product.price.toLocaleString("en-IN")}
+    </p>
+
+  `;
+
+
+  document
+    .getElementById("historyModal")
+    .classList.add("show");
+
+}
+
+
+function closeModal(){
+
+  document
+    .getElementById("historyModal")
+    .classList.remove("show");
+
+}
+
+
+/* =========================================
+   CLICK TRACKING
+========================================= */
+
+function trackClick(id){
+
+  clicks++;
+
+  localStorage.setItem(
+    "dealhub_clicks",
+    clicks
+  );
+
+  updateAdmin();
+
+}
+
+
+/* =========================================
+   ADMIN
+========================================= */
+
+function updateAdmin(){
+
+  document.getElementById(
+    "adminProducts"
+  ).textContent =
+    products.length;
+
+  document.getElementById(
+    "adminWishlist"
+  ).textContent =
+    wishlist.length;
+
+  document.getElementById(
+    "adminClicks"
+  ).textContent =
+    clicks;
+
+}
+
+
+/* =========================================
+   DARK MODE
+========================================= */
+
+function toggleDark(){
+
+  document.body.classList.toggle("dark");
+
+  localStorage.setItem(
+    "dealhub_dark",
+    document.body.classList.contains("dark")
+  );
+
+}
+
+
+/* =========================================
+   API READY FUNCTION
+========================================= */
+
+/*
+  Production me yahan backend/API connect karna:
+
+  async function loadProducts(){
+
+    const response =
+      await fetch("/api/products");
+
+    const data =
+      await response.json();
+
+    products.length = 0;
+
+    products.push(...data);
+
+    render();
+
+  }
+
+  Example backend response:
+
+  {
+    id: 101,
+    name: "Product Name",
+    category: "Electronics",
+    price: 999,
+    mrp: 1999,
+    icon: "📱",
+    store: "Amazon",
+    url: "https://...",
+    history: [1499,1299,1199,999]
+  }
+
+*/
+
+
+/* =========================================
+   INITIAL LOAD
+========================================= */
+
+if(
+  localStorage.getItem("dealhub_dark")
+  === "true"
+){
+
+  document.body.classList.add("dark");
+
+}
+
+
+render();
+
+</script>
+
+</body>
+</html>
